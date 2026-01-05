@@ -85,8 +85,11 @@ class _RemotePageState extends State<RemotePage> {
   @override
   void initState() {
     super.initState();
-    // Azonnal megpróbálunk csatlakozni indításkor
-    _connect();
+    // KRITIKUS JAVÍTÁS: A _connect() hívást a widget fa felépülése utánra időzítjük.
+    // Ez megakadályozza, hogy a SnackBar hibát okozzon induláskor.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _connect();
+    });
   }
 
   @override
@@ -99,6 +102,9 @@ class _RemotePageState extends State<RemotePage> {
 
   // Csatlakozás a megadott IP/Port pároshoz
   void _connect() {
+    // Ha a context még nem elérhető (pl. a widget már nincs a fában), ne csináljunk semmit.
+    if (!mounted) return;
+
     if (_socket != null) {
       _socket!.close();
     }
@@ -121,6 +127,7 @@ class _RemotePageState extends State<RemotePage> {
 
   // OSC üzenet küldése a tartós kapcsolaton
   void sendOSC(String address, List<Object> arguments) {
+    if (!mounted) return;
     if (_socket == null || !_isConnected) {
       _showFeedback('Nincs kapcsolat! Csatlakozz újra.', Colors.orange);
       return;
@@ -132,6 +139,7 @@ class _RemotePageState extends State<RemotePage> {
 
   // Visszajelző SnackBar megjelenítése
   void _showFeedback(String message, Color color) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
