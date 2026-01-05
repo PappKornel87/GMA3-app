@@ -1,4 +1,5 @@
 import 'dart:io';
+// HOZZÁADVA: A debugPrint funkcióhoz szükséges.
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osc/osc.dart';
@@ -227,6 +228,20 @@ class _RemotePageState extends State<RemotePage> {
         _buildOSCButton("Goto Cue 1", "/cmd", ["Go+ Sequence 5 Cue 1"], Colors.blue.shade700),
         _buildOSCButton("Update", "/cmd", ["Update"], Colors.teal.shade600),
         _buildOSCButton("Clear All", "/cmd", ["Clear"], Colors.deepPurple.shade600),
+        // HOZZÁADVA: Az új, dedikált gomb a "Fixture 1 At 100" parancshoz.
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.amber, // Sárga szín a kiemelésért
+            minimumSize: const Size(200, 60),
+          ),
+          onPressed: () {
+            sendOSC("/cmd", ["Fixture 1 At 100"]);
+          },
+          child: const Text(
+            "FIXTURE 1 @ 100%",
+            style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
       ],
     );
   }
