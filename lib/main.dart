@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:osc/osc.dart';
 
 void main() {
@@ -12,11 +13,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Központi téma definiálása a konzisztens kinézetért
+    // A sötét téma alapjainak lekérése
+    final ThemeData darkTheme = ThemeData.dark();
+
+    // Központi téma definiálása a konzisztens kinézetért és a Roboto betűtípusért
     return MaterialApp(
       title: 'MA3 Remote',
-      theme: ThemeData(
-        brightness: Brightness.dark,
+      theme: darkTheme.copyWith(
         primaryColor: Colors.orange.shade800,
         scaffoldBackgroundColor: const Color(0xFF121212),
         colorScheme: ColorScheme.fromSeed(
@@ -24,12 +27,11 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           background: const Color(0xFF121212),
         ),
-        textTheme: const TextTheme(
-          bodyMedium: TextStyle(color: Colors.white),
-        ),
+        // A Google Fonts integrálása az egész alkalmazás szövegstílusába
+        textTheme: GoogleFonts.robotoTextTheme(darkTheme.textTheme),
         appBarTheme: AppBarTheme(
           backgroundColor: const Color(0xFF1F1F1F),
-          titleTextStyle: TextStyle(
+          titleTextStyle: GoogleFonts.roboto(
             color: Colors.orange.shade800,
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -38,9 +40,12 @@ class MyApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
           ),
+          fillColor: const Color(0xFF2A2A2A),
+          filled: true,
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.orange.shade800),
+            borderSide: BorderSide(color: Colors.orange.shade800, width: 2),
             borderRadius: BorderRadius.circular(8),
           ),
           labelStyle: TextStyle(color: Colors.grey.shade400),
@@ -52,7 +57,7 @@ class MyApp extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            textStyle: const TextStyle(
+            textStyle: GoogleFonts.roboto(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
