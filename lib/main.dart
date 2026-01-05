@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart'; // HOZZÁADVA: A debugPrint funkcióhoz szükséges.
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osc/osc.dart';
@@ -17,6 +16,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData darkTheme = ThemeData.dark();
 
+    // JAVÍTVA: Egyedi TextTheme definiálása a jobb vizuális hierarchiáért.
+    final appTextTheme = darkTheme.textTheme.copyWith(
+      titleLarge: GoogleFonts.oswald(fontSize: 22, fontWeight: FontWeight.bold),
+      bodyMedium: GoogleFonts.roboto(fontSize: 14),
+    );
+
     return MaterialApp(
       title: 'MA3 Remote',
       theme: darkTheme.copyWith(
@@ -25,19 +30,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.orange.shade800,
           brightness: Brightness.dark,
-          background: const Color(0xFF121212),
-          // JAVÍTVA: A 'surface' szín explicit beállítása biztosítja a tökéletesen
-          // egységes sötét témát a felületi elemeken is (pl. kártyák, dialógusok).
           surface: const Color(0xFF121212),
         ),
-        textTheme: GoogleFonts.robotoTextTheme(darkTheme.textTheme),
+        // JAVÍTVA: Az egyedi TextTheme használata.
+        textTheme: appTextTheme,
         appBarTheme: AppBarTheme(
           backgroundColor: const Color(0xFF1F1F1F),
-          titleTextStyle: GoogleFonts.roboto(
-            color: Colors.orange.shade800,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+          // JAVÍTVA: Az AppBar címe mostantól az egyedi TextTheme-et használja.
+          titleTextStyle: appTextTheme.titleLarge?.copyWith(color: Colors.orange.shade800),
         ),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
@@ -87,8 +87,6 @@ class _RemotePageState extends State<RemotePage> {
   @override
   void initState() {
     super.initState();
-    // KRITIKUS JAVÍTÁS: A _connect() hívást a widget fa felépülése utánra időzítjük,
-    // megelőzve a 'context' hívásból eredő hibát a widget-fa épülése közben.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _connect();
     });
@@ -132,8 +130,6 @@ class _RemotePageState extends State<RemotePage> {
     final message = OSCMessage(address, arguments: arguments);
     _socket!.send(message);
 
-    // JAVÍTVA: A 'debugPrint' használata megakadályozza, hogy a konzol
-    // levágja a hosszabb kimeneteket, így a hibakeresés könnyebb.
     debugPrint("Elküldve: $address $arguments");
   }
 
