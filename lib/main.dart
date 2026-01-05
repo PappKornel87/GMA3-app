@@ -28,7 +28,7 @@ class RemotePage extends StatefulWidget {
 
 class _RemotePageState extends State<RemotePage> {
   // MA3 beállítások (Alapértelmezett)
-  final TextEditingController _ipController = TextEditingController(text: "192.168.0.10");
+  final TextEditingController _ipController = TextEditingController(text: "192.168.0.102");
   final TextEditingController _portController = TextEditingController(text: "8000");
 
   // OSC üzenet küldése
