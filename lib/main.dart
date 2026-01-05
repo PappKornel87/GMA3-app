@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osc/osc.dart';
@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.orange.shade800,
           brightness: Brightness.dark,
           background: const Color(0xFF121212),
+          surface: const Color(0xFF121212), // Explicit surface szín a tökéletes sötét témáért
         ),
         // A Google Fonts integrálása az egész alkalmazás szövegstílusába
         textTheme: GoogleFonts.robotoTextTheme(darkTheme.textTheme),
@@ -134,7 +135,7 @@ class _RemotePageState extends State<RemotePage> {
     }
     final message = OSCMessage(address, arguments: arguments);
     _socket!.send(message);
-    print("Elküldve: $address $arguments");
+    debugPrint("Elküldve: $address $arguments"); // JAVÍTVA: debugPrint használata
   }
 
   // Visszajelző SnackBar megjelenítése
