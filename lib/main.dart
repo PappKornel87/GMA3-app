@@ -1,8 +1,10 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart'; // HOZZÁADVA: A debugPrint funkcióhoz szükséges.
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osc/osc.dart';
+
+// TÖRÖLVE: A 'dart:async' import felesleges volt.
 
 void main() {
   runApp(const MyApp());
@@ -13,10 +15,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // A sötét téma alapjainak lekérése
     final ThemeData darkTheme = ThemeData.dark();
 
-    // Központi téma definiálása a konzisztens kinézetért és a Roboto betűtípusért
     return MaterialApp(
       title: 'MA3 Remote',
       theme: darkTheme.copyWith(
@@ -26,9 +26,10 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.orange.shade800,
           brightness: Brightness.dark,
           background: const Color(0xFF121212),
-          surface: const Color(0xFF121212), // Explicit surface szín a tökéletes sötét témáért
+          // JAVÍTVA: A 'surface' szín explicit beállítása biztosítja a tökéletesen
+          // egységes sötét témát a felületi elemeken is (pl. kártyák, dialógusok).
+          surface: const Color(0xFF121212),
         ),
-        // A Google Fonts integrálása az egész alkalmazás szövegstílusába
         textTheme: GoogleFonts.robotoTextTheme(darkTheme.textTheme),
         appBarTheme: AppBarTheme(
           backgroundColor: const Color(0xFF1F1F1F),
@@ -80,14 +81,14 @@ class RemotePage extends StatefulWidget {
 class _RemotePageState extends State<RemotePage> {
   final TextEditingController _ipController = TextEditingController(text: "192.168.0.102");
   final TextEditingController _portController = TextEditingController(text: "8000");
-  OSCSocket? _socket; // Tartós socket kapcsolat
+  OSCSocket? _socket;
   bool _isConnected = false;
 
   @override
   void initState() {
     super.initState();
-    // KRITIKUS JAVÍTÁS: A _connect() hívást a widget fa felépülése utánra időzítjük.
-    // Ez megakadályozza, hogy a SnackBar hibát okozzon induláskor.
+    // KRITIKUS JAVÍTÁS: A _connect() hívást a widget fa felépülése utánra időzítjük,
+    // megelőzve a 'context' hívásból eredő hibát a widget-fa épülése közben.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _connect();
     });
@@ -101,14 +102,10 @@ class _RemotePageState extends State<RemotePage> {
     super.dispose();
   }
 
-  // Csatlakozás a megadott IP/Port pároshoz
   void _connect() {
-    // Ha a context még nem elérhető (pl. a widget már nincs a fában), ne csináljunk semmit.
     if (!mounted) return;
 
-    if (_socket != null) {
-      _socket!.close();
-    }
+    _socket?.close();
     try {
       final ip = InternetAddress(_ipController.text);
       final port = int.parse(_portController.text);
@@ -126,7 +123,6 @@ class _RemotePageState extends State<RemotePage> {
     }
   }
 
-  // OSC üzenet küldése a tartós kapcsolaton
   void sendOSC(String address, List<Object> arguments) {
     if (!mounted) return;
     if (_socket == null || !_isConnected) {
@@ -135,10 +131,12 @@ class _RemotePageState extends State<RemotePage> {
     }
     final message = OSCMessage(address, arguments: arguments);
     _socket!.send(message);
-    debugPrint("Elküldve: $address $arguments"); // JAVÍTVA: debugPrint használata
+
+    // JAVÍTVA: A 'debugPrint' használata megakadályozza, hogy a konzol
+    // levágja a hosszabb kimeneteket, így a hibakeresés könnyebb.
+    debugPrint("Elküldve: $address $arguments");
   }
 
-  // Visszajelző SnackBar megjelenítése
   void _showFeedback(String message, Color color) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -156,7 +154,6 @@ class _RemotePageState extends State<RemotePage> {
       appBar: AppBar(
         title: const Text("grandMA3 OSC Remote"),
         actions: [
-          // Kapcsolat állapotát jelző ikon
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: Icon(
@@ -179,7 +176,6 @@ class _RemotePageState extends State<RemotePage> {
     );
   }
 
-  // Beállítások panel widget
   Widget _buildSettingsPanel() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -222,13 +218,12 @@ class _RemotePageState extends State<RemotePage> {
     );
   }
 
-  // Gombok rácsának felépítése
   Widget _buildButtonGrid() {
     return GridView.count(
-      crossAxisCount: 2, // Két oszlop
+      crossAxisCount: 2,
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
-      childAspectRatio: 1.8, // Gombok oldalaránya
+      childAspectRatio: 1.8,
       children: [
         _buildOSCButton("Go+ Seq 5", "/cmd", ["Go+ Sequence 5"], Colors.green.shade700),
         _buildOSCButton("Off Seq 5", "/cmd", ["Off Sequence 5"], Colors.red.shade700),
@@ -240,7 +235,6 @@ class _RemotePageState extends State<RemotePage> {
     );
   }
 
-  // Egyedi gomb widget a kódduplikáció elkerülésére
   Widget _buildOSCButton(String label, String address, List<Object> args, Color color) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(backgroundColor: color),
